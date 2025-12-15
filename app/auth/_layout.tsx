@@ -1,27 +1,22 @@
 import { Stack } from "expo-router";
 import React from "react";
-// SplashScreen.preventAutoHideAsync();
-export default function RootLayout() {
-  const isAuth = false;
-  const isOnboarding = true;
+export default function AuthLayout() {
   return (
-    <Stack
-      initialRouteName={isOnboarding ? "onboarding" : isAuth ? "(tab)" : "auth"}
-    >
+    <Stack initialRouteName="verify-email">
       <Stack.Screen
-        name="(tab)"
+        name="index"
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name="onboarding"
+        name="reset-password"
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name="auth"
+        name="verify-email"
         options={{
           headerShown: false,
         }}
