@@ -1,12 +1,19 @@
 import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
-import { TextInput as RNInput, StyleSheet, View } from "react-native";
-import { Button, Text } from "react-native-paper";
+import {
+  TextInput as RNInput,
+  Text as RNText,
+  StyleSheet,
+  View,
+} from "react-native";
+import { Button, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../lib/colors";
 
 export default function VerifyEmail() {
   const router = useRouter();
+  const [isEnteredEmail, setIsEnteredEmail] = useState(false);
+  const [email, setEmail] = useState("");
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const inputs = useRef<RNInput[]>([]);
 
@@ -20,34 +27,86 @@ export default function VerifyEmail() {
     }
   };
 
-  const onConfirm = () => {
-    router.replace("/auth/reset-password");
+  const onConfirm = async () => {
+    if (isEnteredEmail) {
+      const otpCode = code.join("");
+
+      try {
+        const response = await fetch(
+          "http://172.252.13.92:8052/user/activate-user",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email,
+              code: otpCode,
+            }),
+          }
+        );
+
+        const data = await response.json();
+        console.log("API response:", data);
+
+        if (response.ok) {
+          router.replace("/auth");
+        } else {
+          alert(data.message || "Failed to verify user");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Something went wrong. Please try again.");
+      }
+    } else {
+      setIsEnteredEmail(true);
+    }
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <Text variant="headlineMedium" style={styles.title}>
-          Verify Your Email
+          {isEnteredEmail ? "6-digit code" : "Verify Your Email"}
         </Text>
         <Text style={styles.subtitle}>
-          Enter the 6-digit code sent to your email address
+          {isEnteredEmail
+            ? `Please enter the code we've sent to ${email}`
+            : "We'll send a verification code to this email to confirm your account."}
         </Text>
 
-        <View style={styles.codeContainer}>
-          {code.map((value, i) => (
-            <RNInput
-              secureTextEntry
-              key={i}
-              ref={(ref) => (inputs.current[i] = ref!) as any}
-              style={styles.codeInput}
-              keyboardType="number-pad"
-              maxLength={1}
-              value={value}
-              onChangeText={(text) => onChange(text, i)}
+        {/* Email Input */}
+        {!isEnteredEmail && (
+          <View style={styles.inputWrapper}>
+            <RNText style={styles.label}>Email Address</RNText>
+            <TextInput
+              placeholder="e.g. kristin.cooper@example.com"
+              mode="outlined"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              placeholderTextColor={colors.placeholder}
+              value={email}
+              onChangeText={setEmail}
+              style={styles.input}
             />
-          ))}
-        </View>
+          </View>
+        )}
+        {isEnteredEmail && (
+          <View style={styles.codeContainer}>
+            {code.map((value, i) => (
+              <RNInput
+                secureTextEntry
+                key={i}
+                ref={(ref) => (inputs.current[i] = ref!) as any}
+                style={styles.codeInput}
+                keyboardType="number-pad"
+                maxLength={1}
+                value={value}
+                onChangeText={(text) => onChange(text, i)}
+              />
+            ))}
+          </View>
+        )}
 
         <Button
           mode="contained"
@@ -55,7 +114,7 @@ export default function VerifyEmail() {
           style={styles.button}
           onPress={onConfirm}
         >
-          Confirm
+          {!isEnteredEmail ? "Send OTP" : "Confirm"}
         </Button>
       </View>
     </SafeAreaView>
@@ -81,5 +140,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 18,
   },
-  button: { borderRadius: 10 },
+  button: { borderRadius: 10, paddingVertical: 3 },
+  inputWrapper: {
+    marginBottom: 14,
+  },
+  label: {
+    marginBottom: 4,
+    color: colors.text,
+  },
+  input: {
+    backgroundColor: "#F7FFEF",
+    marginBottom: 40,
+  },
 });

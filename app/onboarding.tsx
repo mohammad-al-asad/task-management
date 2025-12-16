@@ -1,4 +1,5 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
@@ -44,10 +45,11 @@ export default function OnboardingScreen() {
   const flatListRef = useRef<FlatList>(null);
   const [index, setIndex] = useState(0);
 
-  const onNext = () => {
+  const onNext = async () => {
     if (index < slides.length - 1) {
       flatListRef.current?.scrollToIndex({ index: index + 1 });
     } else {
+      await AsyncStorage.setItem("isOld", "true");
       router.replace("/auth" as any);
     }
   };
@@ -64,7 +66,10 @@ export default function OnboardingScreen() {
           </Pressable>
           <Pressable
             style={styles.skip}
-            onPress={() => router.replace("/auth" as any)}
+            onPress={async () => {
+              await AsyncStorage.setItem("isOld", "true");
+              router.replace("/auth" as any);
+            }}
           >
             <Text style={styles.skipText}>Skip</Text>
           </Pressable>

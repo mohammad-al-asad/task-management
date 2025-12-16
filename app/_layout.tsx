@@ -1,31 +1,42 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack } from "expo-router";
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import AuthContextProvider from "./contexts/AuthContextProvider";
 // SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
-  const isAuth = false;
-  const isOnboarding = true;
+  const isOld = useRef("");
+  const isAuth = useRef("");
+  useEffect(() => {
+    (async function () {
+      isOld.current = (await AsyncStorage.getItem("isOld")) || "";
+      isAuth.current = (await AsyncStorage.getItem("token")) || "";
+    })();
+  }, []);
+
   return (
-    <Stack
-      initialRouteName={isOnboarding ? "onboarding" : isAuth ? "(tab)" : "auth"}
-    >
-      <Stack.Screen
-        name="(tab)"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="onboarding"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="auth"
-        options={{
-          headerShown: false,
-        }}
-      />
-    </Stack>
+    <AuthContextProvider>
+      <Stack
+        initialRouteName={isOld ? (isAuth ? "(tab)" : "auth") : "onboarding"}
+      >
+        <Stack.Screen
+          name="(tab)"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="onboarding"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="auth"
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack>
+    </AuthContextProvider>
   );
 }
