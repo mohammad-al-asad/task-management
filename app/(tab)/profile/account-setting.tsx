@@ -1,18 +1,34 @@
+import CommonAlert from "@/app/components/ui/CommonAlert";
 import ProfileTopBar from "@/app/components/ui/ProfileTopBar";
 import { colors } from "@/app/lib/colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
-import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ChangePassword() {
   const router = useRouter();
+  const [showWarning, setShowWarning] = useState(false);
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Alert */}
+      <CommonAlert
+        visible={showWarning}
+        type="warning"
+        title="Warning"
+        message="Are you sure to delete your account?"
+        cancelText="Cancel"
+        confirmText="Confirm"
+        onCancel={() => setShowWarning(false)}
+        onConfirm={() => {
+          setShowWarning(false);
+          Alert.alert("Erorr", "No API provided");
+        }}
+      />
       {/* Header */}
       <ProfileTopBar heading="Account Setting" />
 
@@ -31,7 +47,12 @@ export default function ChangePassword() {
         />
       </Pressable>
 
-      <Pressable style={styles.infoItem} onPress={() => {}}>
+      <Pressable
+        style={styles.infoItem}
+        onPress={() => {
+          setShowWarning(true);
+        }}
+      >
         <View style={styles.infoItemContainer}>
           <Feather name="user-x" size={24} color="#FF0000" />
           <Text
@@ -75,7 +96,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#84cc16",
   },
   infoItem: {
-    marginHorizontal:15,
+    marginHorizontal: 15,
     shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowRadius: 6,

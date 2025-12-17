@@ -30,7 +30,9 @@ export default function ResetPassword() {
       <View style={styles.inputWrapper}>
         <RNText style={styles.label}>Password</RNText>
         <TextInput
+        textColor="black"
           placeholder="••••••••"
+          placeholderTextColor={colors.placeholder}
           mode="outlined"
           value={password}
           onChangeText={setPassword}
@@ -56,7 +58,9 @@ export default function ResetPassword() {
       <View style={styles.inputWrapper}>
         <RNText style={styles.label}>Password</RNText>
         <TextInput
+        textColor="black"
           placeholder="••••••••"
+          placeholderTextColor={colors.placeholder}
           mode="outlined"
           value={confirmPassword}
           onChangeText={setConfirmPassword}
@@ -80,6 +84,7 @@ export default function ResetPassword() {
 
       {/* Button */}
       <Button
+      textColor="white"
         mode="contained"
         buttonColor="#84cc16"
         style={styles.button}

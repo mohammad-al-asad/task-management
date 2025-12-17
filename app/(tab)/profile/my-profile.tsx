@@ -60,7 +60,7 @@ export default function MyProfile() {
           source={require("../../../assets/images/icon.png")}
           style={styles.avatar}
         />
-        <Text style={styles.name}>{user?.firstName}</Text>
+        <Text style={styles.name}>{user?.lastName}</Text>
       </View>
 
       {/* Info */}

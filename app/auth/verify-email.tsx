@@ -47,7 +47,6 @@ export default function VerifyEmail() {
         );
 
         const data = await response.json();
-        console.log("API response:", data);
 
         if (response.ok) {
           router.replace("/auth");
@@ -80,6 +79,7 @@ export default function VerifyEmail() {
           <View style={styles.inputWrapper}>
             <RNText style={styles.label}>Email Address</RNText>
             <TextInput
+            textColor="black"
               placeholder="e.g. kristin.cooper@example.com"
               mode="outlined"
               keyboardType="email-address"
@@ -109,6 +109,7 @@ export default function VerifyEmail() {
         )}
 
         <Button
+        textColor="white"
           mode="contained"
           buttonColor={colors.primary}
           style={styles.button}

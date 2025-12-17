@@ -1,15 +1,35 @@
+import CommonAlert from "@/app/components/ui/CommonAlert";
 import MenuItem from "@/app/components/ui/ProfileMenu";
+import { useAuth } from "@/app/contexts/AuthContextProvider";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Profile() {
   const router = useRouter();
+  const { removeUser } = useAuth();
+  const [showWarning, setShowWarning] = useState(false);
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Alert */}
+      <CommonAlert
+        visible={showWarning}
+        type="warning"
+        title="Warning"
+        message="Are you sure you want to Log Out?"
+        cancelText="Cancel"
+        confirmText="Confirm"
+        onCancel={() => setShowWarning(false)}
+        onConfirm={() => {
+          setShowWarning(false);
+          removeUser!();
+          router.replace("/auth");
+        }}
+      />
+
       {/* Header Background */}
       <Image
         style={styles.headerIMG}
@@ -57,7 +77,11 @@ export default function Profile() {
           label="Help/Support"
           onPress={() => router.push("/profile/help-support")}
         />
-        <MenuItem icon="logout" label="Log Out" />
+        <MenuItem
+          icon="logout"
+          label="Log Out"
+          onPress={() => setShowWarning(true)}
+        />
       </View>
     </SafeAreaView>
   );

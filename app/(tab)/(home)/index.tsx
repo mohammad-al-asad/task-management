@@ -2,6 +2,7 @@ import { Task } from "@/app/types/task";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -12,14 +13,15 @@ import {
 } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../contexts/AuthContextProvider";
-import { colors } from "../lib/colors";
+import { useAuth } from "../../contexts/AuthContextProvider";
+import { colors } from "../../lib/colors";
 
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const router = useRouter();
 
   const API_URL = "http://172.252.13.92:8052/task/get-all-task";
 
@@ -61,16 +63,29 @@ export default function Home() {
 
   // Render task item
   const renderTaskItem = ({ item }: { item: Task }) => (
-    <TouchableOpacity style={styles.taskCard} activeOpacity={0.7}>
+    <TouchableOpacity
+      style={styles.taskCard}
+      activeOpacity={0.7}
+      onPress={() => {
+        console.log("pressed");
+
+        router.push({
+          pathname: "/(tab)/(home)/task-details",
+          params: {
+            ...item,
+          },
+        });
+      }}
+    >
       <Image
-        source={require("../../assets/images/taskBG.png")}
+        source={require("../../../assets/images/taskBG.png")}
         style={styles.taskBGImage}
         contentFit="cover"
       />
 
       <View style={styles.taskContent}>
         <Image
-          source={require("../../assets/images/task.png")}
+          source={require("../../../assets/images/task.png")}
           style={styles.taskImage}
         />
 
@@ -95,6 +110,7 @@ export default function Home() {
       <Text style={styles.emptyText}>Add a task to get started</Text>
     </View>
   );
+  
   if (loading) {
     return (
       <SafeAreaView style={[styles.container, styles.loadingContainer]}>
@@ -103,12 +119,13 @@ export default function Home() {
       </SafeAreaView>
     );
   }
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Image
-          source={require("../../assets/images/icon.png")}
+          source={require("../../../assets/images/icon.png")}
           style={styles.profileImage}
         />
         <View style={styles.headerTextContainer}>

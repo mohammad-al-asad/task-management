@@ -7,14 +7,14 @@ export default function RootLayout() {
   return (
     <Tabs
       options={{
-        initialRouteName: "index",
+        initialRouteName: "(home)",
       }}
     >
       <TabSlot />
 
       <TabList style={styles.tabBar}>
         {/* My Tasks */}
-        <TabTrigger name="(tab)" href="/(tab)" asChild>
+        <TabTrigger name="(home)" href={"/(tab)/(home)" as any} asChild>
           <TabButton icon="home">Home</TabButton>
         </TabTrigger>
 

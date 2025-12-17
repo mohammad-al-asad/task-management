@@ -51,7 +51,8 @@ export default function EditProfile() {
         if (!response.ok) {
           throw new Error(result?.message || "Profile update failed");
         }
-        refetchUser && refetchUser();
+        await AsyncStorage.setItem("user", JSON.stringify(result.data));
+        refetchUser!();
         router.replace("/profile/my-profile");
       } catch (error: any) {
         Alert.alert("Profile update Error", error.message);
@@ -87,6 +88,7 @@ export default function EditProfile() {
       <View style={styles.form}>
         <Text style={styles.label}>First Name</Text>
         <TextInput
+          textColor="black"
           mode="outlined"
           placeholderTextColor={colors.placeholder}
           placeholder="e.g. Kristin"
@@ -97,6 +99,7 @@ export default function EditProfile() {
 
         <Text style={styles.label}>Last Name</Text>
         <TextInput
+          textColor="black"
           mode="outlined"
           placeholderTextColor={colors.placeholder}
           placeholder="e.g. Cooper"
@@ -107,6 +110,7 @@ export default function EditProfile() {
 
         <Text style={styles.label}>Email Address</Text>
         <TextInput
+          textColor="black"
           mode="outlined"
           placeholderTextColor={colors.placeholder}
           placeholder="e.g. kristin.cooper@example.com"
@@ -117,6 +121,7 @@ export default function EditProfile() {
 
         <Text style={styles.label}>Address</Text>
         <TextInput
+          textColor="black"
           mode="outlined"
           placeholderTextColor={colors.placeholder}
           placeholder="e.g. 1234 Elm Street, Springfield, IL"
@@ -126,6 +131,7 @@ export default function EditProfile() {
         />
 
         <Button
+        textColor="white"
           mode="contained"
           style={styles.button}
           disabled={loading}

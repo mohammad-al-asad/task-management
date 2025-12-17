@@ -1,5 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
+import ProfileTopBar from "@/app/components/ui/ProfileTopBar";
+import { colors } from "@/app/lib/colors";
 import React, { useState } from "react";
 import {
   Alert,
@@ -11,51 +11,27 @@ import {
 } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ProfileTopBar from "../components/ui/ProfileTopBar";
-import { colors } from "../lib/colors";
 
 export default function AddTask() {
-  const router = useRouter();
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const onSaveTask = async () => {
-    try {
-      if (!title || !description) throw Error("Fill all the fields");
-      setLoading(true);
-      const token = await AsyncStorage.getItem("token");
-      const res = await fetch("http://172.252.13.92:8052/task/create-task", {
-        method: "POST",
-        body: JSON.stringify({
-          title,
-          description,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const result = await res.json();
-
-      if (result?.status === "Success") {
-        router.push("/(tab)/(home)");
-      }
-    } catch (error: any) {
-      console.error(error);
-      Alert.alert("Add task Error", error.message);
-    } finally {
-      setTitle("");
-      setDescription("");
-      setLoading(false);
+  const onUpdateTask = () => {
+    if (!title && !description) {
+      Alert.alert("Empty field", "Atleast one field must be filled");
+      return;
     }
+
+    console.log("here");
+    Alert.alert("No Api", "No API provided");
+    setLoading(false);
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
-      <ProfileTopBar heading="Add Task" />
+      <ProfileTopBar heading="Edit Task" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
@@ -64,8 +40,8 @@ export default function AddTask() {
         <View style={styles.form}>
           <Text style={styles.label}>Task Title</Text>
           <TextInput
-            mode="outlined"
             textColor="black"
+            mode="outlined"
             placeholderTextColor={colors.placeholder}
             placeholder="e.g. Design Landing Page Header"
             value={title}
@@ -89,14 +65,14 @@ export default function AddTask() {
           />
 
           <Button
+          textColor="white"
             mode="contained"
-            textColor="white"
-            buttonColor="#84cc16"
+            buttonColor={colors.primary}
             style={styles.button}
-            onPress={onSaveTask}
+            onPress={onUpdateTask}
             disabled={loading}
           >
-            Save Task
+            Update Task
           </Button>
         </View>
       </KeyboardAvoidingView>

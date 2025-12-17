@@ -1,9 +1,11 @@
+import CommonAlert from "@/app/components/ui/CommonAlert";
 import ProfileTopBar from "@/app/components/ui/ProfileTopBar";
 import { colors } from "@/app/lib/colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -13,13 +15,81 @@ export default function ChangePassword() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const [showOld, setShowOld] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
+  const onConfirmUpdate = async () => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("password", newPassword);
+
+      const response = await fetch(
+        "http://172.252.13.92:8052/user/update-profile",
+        {
+          method: "PATCH",
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result?.message || "Password update failed");
+      }
+      setShowWarning(false);
+      setShowSuccess(true);
+    } catch (error: any) {
+      Alert.alert("Password update Error", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onUpdatePassword = async () => {
+    if (oldPassword && confirmPassword && newPassword) {
+      if (confirmPassword !== newPassword) {
+        Alert.alert("Error", "Password didn't match");
+        return;
+      }
+      setShowWarning(true);
+    } else {
+      Alert.alert("Error", "Fill all the fields");
+      return;
+    }
+  };
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Alert */}
+      <CommonAlert
+        visible={showWarning}
+        type="warning"
+        title="Warning"
+        message="Are you sure to update password?"
+        cancelText="Cancel"
+        confirmText="Confirm"
+        onCancel={() => setShowWarning(false)}
+        onConfirm={onConfirmUpdate}
+      />
+      <CommonAlert
+        visible={showSuccess}
+        type="success"
+        title="Success"
+        message="Your password has been updated successfully."
+        confirmText="OK"
+        onConfirm={() => {
+          router.replace("/profile/account-setting");
+          setShowSuccess(false);
+        }}
+      />
       {/* Header */}
       <ProfileTopBar heading="Change Password" />
 
@@ -29,6 +99,8 @@ export default function ChangePassword() {
         <TextInput
           mode="outlined"
           value={oldPassword}
+                    placeholderTextColor={colors.placeholder}
+          textColor="black"
           placeholder="••••••••"
           onChangeText={setOldPassword}
           secureTextEntry={!showOld}
@@ -50,7 +122,9 @@ export default function ChangePassword() {
         <TextInput
           mode="outlined"
           value={newPassword}
+                    placeholderTextColor={colors.placeholder}
           placeholder="••••••••"
+          textColor="black"
           onChangeText={setNewPassword}
           secureTextEntry={!showNew}
           style={styles.input}
@@ -71,9 +145,11 @@ export default function ChangePassword() {
         <Text style={styles.label}>New Confirm Password</Text>
         <TextInput
           mode="outlined"
+                    placeholderTextColor={colors.placeholder}
           value={confirmPassword}
           placeholder="••••••••"
           onChangeText={setConfirmPassword}
+          textColor="black"
           secureTextEntry={!showConfirm}
           style={styles.input}
           right={
@@ -89,7 +165,13 @@ export default function ChangePassword() {
           }
         />
 
-        <Button mode="contained" style={styles.button}>
+        <Button
+          mode="contained"
+          style={styles.button}
+          onPress={onUpdatePassword}
+          disabled={loading}
+          textColor="white"
+        >
           Update
         </Button>
       </View>

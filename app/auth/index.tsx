@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { Button, Checkbox, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../contexts/AuthContextProvider";
 import { colors } from "../lib/colors";
 
 export default function Auth() {
@@ -34,6 +35,8 @@ export default function Auth() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const { refetchUser } = useAuth();
 
   const loginUser = async () => {
     if (!email || !password) {
@@ -57,8 +60,8 @@ export default function Auth() {
       //Save user & token
       await AsyncStorage.setItem("token", result.data.token);
       await AsyncStorage.setItem("user", JSON.stringify(result.data.user));
-
-      router.replace("/(tab)/home" as any);
+      refetchUser!();
+      router.replace("/(tab)" as any);
     } catch (error: any) {
       Alert.alert("Login Error", error.message);
     } finally {
@@ -150,12 +153,12 @@ export default function Auth() {
               : "Stay productive and take control of your tasks."}
           </RNText>
 
-
           {isSignUp && (
             <>
               <View style={styles.inputWrapper}>
                 <RNText style={styles.label}>First Name</RNText>
                 <TextInput
+                textColor="black"
                   mode="outlined"
                   placeholder="e.g. Kristin"
                   value={firstName}
@@ -168,6 +171,7 @@ export default function Auth() {
               <View style={styles.inputWrapper}>
                 <RNText style={styles.label}>Last Name</RNText>
                 <TextInput
+                textColor="black"
                   mode="outlined"
                   placeholder="e.g. Cooper"
                   value={lastName}
@@ -180,6 +184,7 @@ export default function Auth() {
               <View style={styles.inputWrapper}>
                 <RNText style={styles.label}>Address</RNText>
                 <TextInput
+                textColor="black"
                   mode="outlined"
                   placeholder="e.g. 1234 Elm Street, Springfield, IL"
                   value={address}
@@ -194,6 +199,7 @@ export default function Auth() {
           <View style={styles.inputWrapper}>
             <RNText style={styles.label}>Email Address</RNText>
             <TextInput
+            textColor="black"
               mode="outlined"
               keyboardType="email-address"
               placeholder="e.g. kristin.cooper@example.com"
@@ -208,6 +214,7 @@ export default function Auth() {
           <View style={styles.inputWrapper}>
             <RNText style={styles.label}>Password</RNText>
             <TextInput
+            textColor="black"
               mode="outlined"
               value={password}
               placeholder="••••••••"
@@ -235,6 +242,7 @@ export default function Auth() {
             <View style={styles.inputWrapper}>
               <RNText style={styles.label}>Confirm Password</RNText>
               <TextInput
+              textColor="black"
                 mode="outlined"
                 value={confirmPassword}
                 placeholder="••••••••"
@@ -306,6 +314,7 @@ export default function Auth() {
 
           {/* BUTTON */}
           <Button
+          textColor="white"
             mode="contained"
             buttonColor={colors.primary}
             loading={loading}
