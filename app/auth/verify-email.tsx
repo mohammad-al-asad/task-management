@@ -79,7 +79,7 @@ export default function VerifyEmail() {
           <View style={styles.inputWrapper}>
             <RNText style={styles.label}>Email Address</RNText>
             <TextInput
-            textColor="black"
+              textColor="black"
               placeholder="e.g. kristin.cooper@example.com"
               mode="outlined"
               keyboardType="email-address"
@@ -109,7 +109,7 @@ export default function VerifyEmail() {
         )}
 
         <Button
-        textColor="white"
+          textColor="white"
           mode="contained"
           buttonColor={colors.primary}
           style={styles.button}
@@ -125,7 +125,7 @@ export default function VerifyEmail() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#fff" },
   container: { flex: 1, paddingHorizontal: 24, justifyContent: "center" },
-  title: { fontWeight: "600", marginBottom: 8 },
+  title: { fontWeight: "600", marginBottom: 8, color: "black" },
   subtitle: { color: "#6b7280", marginBottom: 28 },
   codeContainer: {
     flexDirection: "row",

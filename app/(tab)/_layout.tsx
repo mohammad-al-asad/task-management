@@ -1,9 +1,23 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import { TabList, Tabs, TabSlot, TabTrigger } from "expo-router/ui";
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet } from "react-native";
 import TabButton from "../components/ui/TabButton";
 
 export default function RootLayout() {
+  const router = useRouter();
+  useEffect(() => {
+    (async function () {
+      const isOld = (await AsyncStorage.getItem("isOld")) || null;
+      const token = (await AsyncStorage.getItem("token")) || null;
+      if (!isOld) {
+        router.replace("/onboarding");
+      } else if (!token) {
+        router.replace("/auth");
+      }
+    })();
+  }, []);
   return (
     <Tabs
       options={{

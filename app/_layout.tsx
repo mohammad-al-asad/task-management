@@ -9,8 +9,8 @@ export default function RootLayout() {
 
   useEffect(() => {
     (async function () {
-      const isOld = (await AsyncStorage.getItem("isOld")) || "";
-      const token = (await AsyncStorage.getItem("token")) || "";
+      const isOld = (await AsyncStorage.getItem("isOld")) || null;
+      const token = (await AsyncStorage.getItem("token")) || null;
       setInitialRoute(isOld ? (token ? "(tab)" : "auth") : "onboarding");
       await SplashScreen.hideAsync();
     })();
@@ -19,7 +19,6 @@ export default function RootLayout() {
   if (!initialRoute) {
     return null;
   }
-console.log(initialRoute);
 
   return (
     <AuthContextProvider>
