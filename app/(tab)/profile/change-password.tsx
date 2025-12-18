@@ -27,7 +27,9 @@ export default function ChangePassword() {
       setLoading(true);
       const token = await AsyncStorage.getItem("token");
       const formData = new FormData();
+      
       formData.append("password", newPassword);
+      console.log(newPassword);
 
       const response = await fetch(
         "http://172.252.13.92:8052/user/update-profile",
@@ -99,7 +101,7 @@ export default function ChangePassword() {
         <TextInput
           mode="outlined"
           value={oldPassword}
-                    placeholderTextColor={colors.placeholder}
+          placeholderTextColor={colors.placeholder}
           textColor="black"
           placeholder="••••••••"
           onChangeText={setOldPassword}
@@ -122,7 +124,7 @@ export default function ChangePassword() {
         <TextInput
           mode="outlined"
           value={newPassword}
-                    placeholderTextColor={colors.placeholder}
+          placeholderTextColor={colors.placeholder}
           placeholder="••••••••"
           textColor="black"
           onChangeText={setNewPassword}
@@ -145,7 +147,7 @@ export default function ChangePassword() {
         <Text style={styles.label}>New Confirm Password</Text>
         <TextInput
           mode="outlined"
-                    placeholderTextColor={colors.placeholder}
+          placeholderTextColor={colors.placeholder}
           value={confirmPassword}
           placeholder="••••••••"
           onChangeText={setConfirmPassword}

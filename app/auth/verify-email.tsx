@@ -125,7 +125,7 @@ export default function VerifyEmail() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#fff" },
   container: { flex: 1, paddingHorizontal: 24, justifyContent: "center" },
-  title: { fontWeight: "600", marginBottom: 8 },
+  title: { fontWeight: "600", marginBottom: 8, color:"black" },
   subtitle: { color: "#6b7280", marginBottom: 28 },
   codeContainer: {
     flexDirection: "row",
