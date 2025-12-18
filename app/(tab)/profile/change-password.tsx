@@ -25,11 +25,10 @@ export default function ChangePassword() {
   const onConfirmUpdate = async () => {
     try {
       setLoading(true);
+      setShowWarning(false);
       const token = await AsyncStorage.getItem("token");
       const formData = new FormData();
-      
       formData.append("password", newPassword);
-      console.log(newPassword);
 
       const response = await fetch(
         "http://172.252.13.92:8052/user/update-profile",
@@ -47,7 +46,6 @@ export default function ChangePassword() {
       if (!response.ok) {
         throw new Error(result?.message || "Password update failed");
       }
-      setShowWarning(false);
       setShowSuccess(true);
     } catch (error: any) {
       Alert.alert("Password update Error", error.message);
@@ -75,7 +73,7 @@ export default function ChangePassword() {
         visible={showWarning}
         type="warning"
         title="Warning"
-        message="Are you sure to update password?"
+        message="Are you sure you want to change your password?"
         cancelText="Cancel"
         confirmText="Confirm"
         onCancel={() => setShowWarning(false)}
@@ -85,7 +83,7 @@ export default function ChangePassword() {
         visible={showSuccess}
         type="success"
         title="Success"
-        message="Your password has been updated successfully."
+        message="Your password has been changed successfully."
         confirmText="OK"
         onConfirm={() => {
           router.replace("/profile/account-setting");

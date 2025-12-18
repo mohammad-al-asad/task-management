@@ -19,7 +19,9 @@ const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const removeUser = async () => {
     setUser(null);
     await AsyncStorage.removeItem("user");
+    await AsyncStorage.removeItem("token");
   };
+  
   useEffect(() => {
     getUser();
   }, []);

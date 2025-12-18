@@ -20,7 +20,7 @@ export default function ChangePassword() {
         visible={showWarning}
         type="warning"
         title="Warning"
-        message="Are you sure to delete your account?"
+        message="Are you sure you want to permanently delete your account? This action cannot be undone."
         cancelText="Cancel"
         confirmText="Confirm"
         onCancel={() => setShowWarning(false)}

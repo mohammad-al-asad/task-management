@@ -11,12 +11,14 @@ import {
 } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Loadder from "../components/ui/Loadder";
 import ProfileTopBar from "../components/ui/ProfileTopBar";
+import { useTask } from "../contexts/TaskProvider";
 import { colors } from "../lib/colors";
 
 export default function AddTask() {
   const router = useRouter();
-
+  const { getTasks } = useTask();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,6 +42,7 @@ export default function AddTask() {
       const result = await res.json();
 
       if (result?.status === "Success") {
+        await getTasks!();
         router.push("/(tab)/(home)");
       }
     } catch (error: any) {
@@ -51,6 +54,7 @@ export default function AddTask() {
       setLoading(false);
     }
   };
+  if (loading) return <Loadder text="Adding Task..."/>;
 
   return (
     <SafeAreaView style={styles.safeArea}>

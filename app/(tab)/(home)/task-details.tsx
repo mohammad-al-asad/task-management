@@ -1,5 +1,8 @@
+import Loadder from "@/app/components/ui/Loadder";
 import ProfileTopBar from "@/app/components/ui/ProfileTopBar";
+import { useTask } from "@/app/contexts/TaskProvider";
 import { colors } from "@/app/lib/colors";
+import { Task } from "@/app/types/task";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -9,13 +12,10 @@ import { Button, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TaskDetails() {
-  const { title, description, _id } = useLocalSearchParams<{
-    _id: string;
-    title: string;
-    description: string;
-  }>();
+  const { title, description, _id } = useLocalSearchParams<Task>();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { getTasks } = useTask();
 
   const onDelete = async () => {
     try {
@@ -34,6 +34,7 @@ export default function TaskDetails() {
       const result = await res.json();
 
       if (result?.status === "Success") {
+        await getTasks!();
         router.replace("/(tab)" as any);
       }
     } catch (error: any) {
@@ -46,6 +47,9 @@ export default function TaskDetails() {
   const onEdit = () => {
     router.push("/edit-task");
   };
+
+  if (loading) return <Loadder text="Deleting Task..." />;
+
   return (
     <SafeAreaView>
       {/* Header */}

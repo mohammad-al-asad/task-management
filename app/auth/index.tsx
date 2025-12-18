@@ -109,6 +109,9 @@ export default function Auth() {
       const response = await fetch("http://172.252.13.92:8052/user/register", {
         method: "POST",
         body: formData,
+        headers:{
+          "Content-Type": "application/x-www-form-urlencoded",
+        }
       });
 
       const result = await response.json();

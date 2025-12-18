@@ -1,9 +1,10 @@
+import Loadder from "@/app/components/ui/Loadder";
+import { useTask } from "@/app/contexts/TaskProvider";
 import { Task } from "@/app/types/task";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   FlatList,
   StyleSheet,
@@ -11,54 +12,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../contexts/AuthContextProvider";
-import { colors } from "../../lib/colors";
 
 export default function Home() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const router = useRouter();
-
-  const API_URL = "http://172.252.13.92:8052/task/get-all-task";
-
-  // Fetch tasks
-  const fetchTasks = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      const response = await fetch(API_URL, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const result = await response.json();
-
-      if (result?.status === "Success") {
-        setTasks(result.data.myTasks);
-      } else {
-        setTasks([]);
-      }
-    } catch (error) {
-      console.error("Fetch error:", error);
-      setTasks([]);
-    } finally {
-      setRefreshing(false);
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchTasks();
-  }, []);
+  const { refreshing, tasks, getTasks, loading } = useTask();
 
   const onRefresh = () => {
-    setRefreshing(true);
-    fetchTasks();
+    getTasks!();
   };
 
   // Render task item
@@ -110,16 +73,8 @@ export default function Home() {
       <Text style={styles.emptyText}>Add a task to get started</Text>
     </View>
   );
-  
-  if (loading) {
-    return (
-      <SafeAreaView style={[styles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Loading tasks..</Text>
-      </SafeAreaView>
-    );
-  }
 
+  if (loading) return <Loadder text="Loading Tasks..."/>;
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -158,15 +113,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fafbf9",
-  },
-  loadingContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: "#6b7280",
   },
   header: {
     flexDirection: "row",

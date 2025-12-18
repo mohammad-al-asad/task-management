@@ -1,3 +1,4 @@
+import CommonAlert from "@/app/components/ui/CommonAlert";
 import ProfileTopBar from "@/app/components/ui/ProfileTopBar";
 import { useAuth } from "@/app/contexts/AuthContextProvider";
 import { colors } from "@/app/lib/colors";
@@ -24,41 +25,48 @@ export default function EditProfile() {
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const onConfirmUpdate = async () => {
+    try {
+      setLoading(true);
+      setShowWarning(false);
+      const token = await AsyncStorage.getItem("token");
+      const formData = new FormData();
+      if (firstName) formData.append("firstName", firstName);
+      if (lastName) formData.append("lastName", lastName);
+      if (address) formData.append("address", address);
+      if (email) formData.append("email", email);
+
+      const response = await fetch(
+        "http://172.252.13.92:8052/user/update-profile",
+        {
+          method: "PATCH",
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result?.message || "Profile update failed");
+      }
+      await AsyncStorage.setItem("user", JSON.stringify(result.data));
+      refetchUser!();
+      setShowSuccess(true);
+    } catch (error: any) {
+      Alert.alert("Profile update Error", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   const updateUser = async () => {
     if (firstName || lastName || address || email) {
-      try {
-        setLoading(true);
-        const token = await AsyncStorage.getItem("token");
-        const formData = new FormData();
-        if (firstName) formData.append("firstName", firstName);
-        if (lastName) formData.append("lastName", lastName);
-        if (address) formData.append("address", address);
-        if (email) formData.append("email", email);
-
-        const response = await fetch(
-          "http://172.252.13.92:8052/user/update-profile",
-          {
-            method: "PATCH",
-            body: formData,
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(result?.message || "Profile update failed");
-        }
-        await AsyncStorage.setItem("user", JSON.stringify(result.data));
-        refetchUser!();
-        router.replace("/profile/my-profile");
-      } catch (error: any) {
-        Alert.alert("Profile update Error", error.message);
-      } finally {
-        setLoading(false);
-      }
+      setShowWarning(true);
     } else {
       Alert.alert("Error", "At least one field is required");
       return;
@@ -66,6 +74,28 @@ export default function EditProfile() {
   };
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Alert */}
+      <CommonAlert
+        visible={showWarning}
+        type="warning"
+        title="Warning"
+        message="Are you sure you want to update your profile information?"
+        cancelText="Cancel"
+        confirmText="Confirm"
+        onCancel={() => setShowWarning(false)}
+        onConfirm={onConfirmUpdate}
+      />
+      <CommonAlert
+        visible={showSuccess}
+        type="success"
+        title="Success"
+        message="Your profile has been updated successfully."
+        confirmText="OK"
+        onConfirm={() => {
+          router.replace("/profile/my-profile");
+          setShowSuccess(false);
+        }}
+      />
       {/* Header */}
       <ProfileTopBar heading="Edit Profile" />
 
@@ -131,7 +161,7 @@ export default function EditProfile() {
         />
 
         <Button
-        textColor="white"
+          textColor="white"
           mode="contained"
           style={styles.button}
           disabled={loading}
