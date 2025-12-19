@@ -1,7 +1,7 @@
 import Loadder from "@/app/components/ui/Loadder";
 import ProfileTopBar from "@/app/components/ui/ProfileTopBar";
-import { useTask } from "@/app/contexts/TaskProvider";
 import { colors } from "@/app/lib/colors";
+import { useGetTasksQuery } from "@/app/redux/api/taskApi";
 import { Task } from "@/app/types/task";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -15,7 +15,7 @@ export default function TaskDetails() {
   const { title, description, _id } = useLocalSearchParams<Task>();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { getTasks } = useTask();
+  const { refetch } = useGetTasksQuery();
 
   const onDelete = async () => {
     try {
@@ -34,7 +34,7 @@ export default function TaskDetails() {
       const result = await res.json();
 
       if (result?.status === "Success") {
-        await getTasks!();
+        await refetch();
         router.replace("/(tab)" as any);
       }
     } catch (error: any) {
