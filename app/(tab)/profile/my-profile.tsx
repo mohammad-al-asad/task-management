@@ -1,11 +1,12 @@
-import { useAuth } from "@/app/contexts/AuthContextProvider";
 import { colors } from "@/app/lib/colors";
+import { RootState } from "@/app/redux";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
 
 const InfoItem = ({ icon, value }: { icon: any; value: string }) => (
   <View style={styles.infoItem}>
@@ -26,7 +27,7 @@ const InfoItem = ({ icon, value }: { icon: any; value: string }) => (
 
 export default function MyProfile() {
   const router = useRouter();
-  const { user } = useAuth();
+  const user = useSelector((state: RootState) => state.auth.user);
 
   return (
     <SafeAreaView style={styles.safeArea}>
