@@ -15,8 +15,9 @@ import {
 } from "react-native";
 import { Button, Checkbox, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../contexts/AuthContextProvider";
+import { useDispatch } from "react-redux";
 import { colors } from "../lib/colors";
+import { setUser } from "../redux/slices/authSlice";
 
 export default function Auth() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function Auth() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [acceptedRememberMe, setAcceptedRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const dispatch = useDispatch();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [address, setAddress] = useState("");
@@ -35,8 +36,6 @@ export default function Auth() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const { refetchUser } = useAuth();
 
   const loginUser = async () => {
     if (!email || !password) {
@@ -60,7 +59,7 @@ export default function Auth() {
       //Save user & token
       await AsyncStorage.setItem("token", result.data.token);
       await AsyncStorage.setItem("user", JSON.stringify(result.data.user));
-      refetchUser!();
+      dispatch(setUser(result.data.user));
       router.replace("/(tab)" as any);
     } catch (error: any) {
       Alert.alert("Login Error", error.message);
@@ -109,9 +108,6 @@ export default function Auth() {
       const response = await fetch("http://172.252.13.92:8052/user/register", {
         method: "POST",
         body: formData,
-        headers:{
-          "Content-Type": "application/x-www-form-urlencoded",
-        }
       });
 
       const result = await response.json();
@@ -161,7 +157,7 @@ export default function Auth() {
               <View style={styles.inputWrapper}>
                 <RNText style={styles.label}>First Name</RNText>
                 <TextInput
-                textColor="black"
+                  textColor="black"
                   mode="outlined"
                   placeholder="e.g. Kristin"
                   value={firstName}
@@ -174,7 +170,7 @@ export default function Auth() {
               <View style={styles.inputWrapper}>
                 <RNText style={styles.label}>Last Name</RNText>
                 <TextInput
-                textColor="black"
+                  textColor="black"
                   mode="outlined"
                   placeholder="e.g. Cooper"
                   value={lastName}
@@ -187,7 +183,7 @@ export default function Auth() {
               <View style={styles.inputWrapper}>
                 <RNText style={styles.label}>Address</RNText>
                 <TextInput
-                textColor="black"
+                  textColor="black"
                   mode="outlined"
                   placeholder="e.g. 1234 Elm Street, Springfield, IL"
                   value={address}
@@ -202,7 +198,7 @@ export default function Auth() {
           <View style={styles.inputWrapper}>
             <RNText style={styles.label}>Email Address</RNText>
             <TextInput
-            textColor="black"
+              textColor="black"
               mode="outlined"
               keyboardType="email-address"
               placeholder="e.g. kristin.cooper@example.com"
@@ -217,7 +213,7 @@ export default function Auth() {
           <View style={styles.inputWrapper}>
             <RNText style={styles.label}>Password</RNText>
             <TextInput
-            textColor="black"
+              textColor="black"
               mode="outlined"
               value={password}
               placeholder="••••••••"
@@ -245,7 +241,7 @@ export default function Auth() {
             <View style={styles.inputWrapper}>
               <RNText style={styles.label}>Confirm Password</RNText>
               <TextInput
-              textColor="black"
+                textColor="black"
                 mode="outlined"
                 value={confirmPassword}
                 placeholder="••••••••"
@@ -317,7 +313,7 @@ export default function Auth() {
 
           {/* BUTTON */}
           <Button
-          textColor="white"
+            textColor="white"
             mode="contained"
             buttonColor={colors.primary}
             loading={loading}
@@ -348,7 +344,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     fontSize: 14,
     paddingVertical: 10,
-
     color: "#374151",
   },
   link: { color: "#84cc16", fontWeight: "500" },
