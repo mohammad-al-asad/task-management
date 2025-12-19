@@ -1,10 +1,13 @@
 import Loadder from "@/app/components/ui/Loadder";
-import { useTask } from "@/app/contexts/TaskProvider";
+import { RootState } from "@/app/redux";
+import { useGetTasksQuery } from "@/app/redux/api/taskApi";
+import { setUser } from "@/app/redux/slices/authSlice";
 import { Task } from "@/app/types/task";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -13,16 +16,20 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../../contexts/AuthContextProvider";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Home() {
-  const { user } = useAuth();
+  const dispatch = useDispatch();
   const router = useRouter();
-  const { refreshing, tasks, getTasks, loading } = useTask();
+  const user = useSelector((state: RootState) => state.auth.user);
+  const { isLoading, refetch, isFetching, data: tasks } = useGetTasksQuery();
 
-  const onRefresh = () => {
-    getTasks!();
-  };
+  useEffect(() => {
+    (async () => {
+      const user = (await AsyncStorage.getItem("user")) || null;
+      if (user) dispatch(setUser(JSON.parse(user)));
+    })();
+  }, []);
 
   // Render task item
   const renderTaskItem = ({ item }: { item: Task }) => (
@@ -30,8 +37,6 @@ export default function Home() {
       style={styles.taskCard}
       activeOpacity={0.7}
       onPress={() => {
-        console.log("pressed");
-
         router.push({
           pathname: "/(tab)/(home)/task-details",
           params: {
@@ -74,7 +79,7 @@ export default function Home() {
     </View>
   );
 
-  if (loading) return <Loadder text="Loading Tasks..."/>;
+  if (isLoading) return <Loadder text="Loading Tasks..." />;
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -100,8 +105,8 @@ export default function Home() {
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
+        refreshing={isFetching}
+        onRefresh={refetch}
         ListEmptyComponent={renderEmptyList}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />

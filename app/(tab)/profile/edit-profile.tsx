@@ -1,7 +1,7 @@
 import CommonAlert from "@/app/components/ui/CommonAlert";
 import ProfileTopBar from "@/app/components/ui/ProfileTopBar";
-import { useAuth } from "@/app/contexts/AuthContextProvider";
 import { colors } from "@/app/lib/colors";
+import { setUser } from "@/app/redux/slices/authSlice";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -16,10 +16,11 @@ import {
 } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch } from "react-redux";
 
 export default function EditProfile() {
   const router = useRouter();
-  const { refetchUser } = useAuth();
+  const dispatch = useDispatch();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -56,7 +57,7 @@ export default function EditProfile() {
         throw new Error(result?.message || "Profile update failed");
       }
       await AsyncStorage.setItem("user", JSON.stringify(result.data));
-      refetchUser!();
+      dispatch(setUser(result.data));
       setShowSuccess(true);
     } catch (error: any) {
       Alert.alert("Profile update Error", error.message);
