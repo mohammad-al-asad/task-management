@@ -1,15 +1,16 @@
 import CommonAlert from "@/app/components/ui/CommonAlert";
 import MenuItem from "@/app/components/ui/ProfileMenu";
-import { useAuth } from "@/app/contexts/AuthContextProvider";
+import { logout } from "@/app/redux/slices/authSlice";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch } from "react-redux";
 
 export default function Profile() {
   const router = useRouter();
-  const { removeUser } = useAuth();
+  const dispatch = useDispatch();
   const [showWarning, setShowWarning] = useState(false);
 
   return (
@@ -25,7 +26,7 @@ export default function Profile() {
         onCancel={() => setShowWarning(false)}
         onConfirm={() => {
           setShowWarning(false);
-          removeUser!();
+          dispatch(logout());
           router.replace("/auth");
         }}
       />
